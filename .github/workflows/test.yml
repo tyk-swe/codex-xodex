@@ -1,0 +1,52 @@
+name: test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12', '3.13']
+    env:
+      PYTHONWARNINGS: error
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - run: python -m pip install '.[test]'
+      - name: Check source and deployment scripts
+        run: |
+          python -m compileall -q src scripts tests
+          bash -n scripts/install-user.sh scripts/build-worker.sh
+          python -m pytest -q -W error --junitxml=test-results-source.xml
+      - name: Build wheel and source archive
+        run: |
+          python -m pip wheel --no-deps . -w dist
+          python scripts/release.py
+      - name: Test the installed wheel without source imports
+        run: |
+          python -m venv --system-site-packages "$RUNNER_TEMP/xodex-wheel"
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -m pip install --no-deps --force-reinstall dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -c 'import xodex; print(xodex.__version__, xodex.__file__)'
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -m pytest -q -W error -o pythonpath= \
+            "$GITHUB_WORKSPACE/tests" --junitxml="$GITHUB_WORKSPACE/test-results-wheel.xml"
+      - name: Test the extracted source archive
+        run: |
+          unzip -q dist/*.zip -d "$RUNNER_TEMP/xodex-archive"
+          cd "$RUNNER_TEMP/xodex-archive/chatgpt-xodex"
+          sha256sum -c SHA256SUMS
+          python -m pytest -q -W error --junitxml="$GITHUB_WORKSPACE/test-results-archive.xml"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ matrix.python }}
+          path: |
+            test-results*.xml
+            dist/*.whl
+            dist/*.zip

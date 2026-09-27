@@ -1,0 +1,15 @@
+# Pin BASE_IMAGE to a reviewed digest for repeatable deployments.
+ARG BASE_IMAGE=docker.io/library/rust:slim-bookworm
+FROM ${BASE_IMAGE}
+# Preinstall the repository's pinned Rust toolchain at image-build time, not in a read-only worker.
+ARG RUST_TOOLCHAIN=stable
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash ca-certificates git ripgrep python3 python3-venv nodejs npm \
+    build-essential clang pkg-config libpcap-dev file jq \
+    && rm -rf /var/lib/apt/lists/*
+RUN rustup toolchain install "${RUST_TOOLCHAIN}" --profile minimal --component rustfmt,clippy \
+    && chmod -R a+rX /usr/local/rustup /usr/local/cargo \
+    && mkdir -p /workspace /home/worker && chmod 755 /workspace /home/worker
+ENV HOME=/home/worker CARGO_HOME=/home/worker/.cargo RUSTUP_HOME=/usr/local/rustup
+WORKDIR /workspace
+ENTRYPOINT ["/bin/bash"]

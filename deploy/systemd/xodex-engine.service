@@ -1,0 +1,18 @@
+[Unit]
+Description=chatgpt-xodex durable execution supervisor
+
+[Service]
+Type=simple
+ExecStart=%h/.xodex/venv/bin/xodex supervise
+Restart=on-failure
+RestartSec=3
+UMask=0077
+Delegate=yes
+KillMode=control-group
+TimeoutStopSec=60
+# Rootless Podman needs user namespaces and the newuidmap/newgidmap helpers.
+# Do not apply NoNewPrivileges, PrivateUsers, or RestrictNamespaces to this service.
+# The worker containers themselves enforce no-new-privileges and drop all capabilities.
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chatgpt-xodex"
+dynamic = ["version"]
+description = "Task-to-pull-request coding for ChatGPT over private MCP"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+  "starlette==0.50.0",
+  "uvicorn==0.48.0",
+  "httpx==0.28.1",
+  "jsonschema==4.26.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.0.2", "pytest-asyncio==1.3.0"]
+
+[project.scripts]
+xodex = "xodex.cli:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "xodex.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+xodex = ["instructions.md"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_debug = true
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["podman: requires a configured rootless Podman host and worker image"]

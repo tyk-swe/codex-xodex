@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenAI Secure MCP Tunnel for chatgpt-xodex
+After=xodex-mcp.service
+Wants=xodex-mcp.service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/opt/openai-tunnel/tunnel-client run --profile-file %h/.xodex/tunnel-client.yaml
+EnvironmentFile=%h/.xodex/tunnel.env
+Environment=MCP_UNIX_SOCKET_PATH=%h/.xodex/run/mcp.sock
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+KillMode=control-group
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

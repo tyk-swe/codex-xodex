@@ -1,0 +1,19 @@
+[Unit]
+Description=chatgpt-xodex private MCP gateway
+After=xodex-engine.service
+Wants=xodex-engine.service
+
+[Service]
+Type=simple
+ExecStart=%h/.xodex/venv/bin/xodex serve
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+KillMode=control-group
+TimeoutStopSec=50
+
+[Install]
+WantedBy=default.target

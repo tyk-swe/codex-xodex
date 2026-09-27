@@ -31,7 +31,8 @@ jobs:
       - name: Test the installed wheel without source imports
         run: |
           python -m venv --system-site-packages "$RUNNER_TEMP/xodex-wheel"
-          "$RUNNER_TEMP/xodex-wheel/bin/python" -m pip install --no-deps --force-reinstall dist/*.whl
+          # Bundled pip may use deprecated APIs; keep strict warnings for the tests below.
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -W default -m pip install --no-deps --force-reinstall dist/*.whl
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/xodex-wheel/bin/python" -c 'import xodex; print(xodex.__version__, xodex.__file__)'
           "$RUNNER_TEMP/xodex-wheel/bin/python" -m pytest -q -W error -o pythonpath= \

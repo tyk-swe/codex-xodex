@@ -6,7 +6,7 @@ from typing import Any
 from jsonschema import Draft202012Validator, validators
 
 from .errors import XodexError
-from .store import canonical
+from .jsonutil import canonical
 
 # JSON Schema considers 1.0 an integer; Python indices and byte offsets do not.
 ArgumentValidator = validators.extend(

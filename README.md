@@ -15,9 +15,15 @@ backward-compatibility promises for earlier development snapshots.
 
 ## Use it
 
-After [deployment](docs/DEPLOYMENT.md), select the app and describe the work:
+On a provisioned Linux VPS, run `./scripts/install-user.sh` for guided setup.
+For bootstrap without prompts, add `--install-only`, then run `xodex setup` in a
+terminal. Setup configures repository policies, validates the sandbox and offers
+service startup with a default of no. See [deployment](docs/DEPLOYMENT.md) for host
+prerequisites, credentials, the external tunnel client and live acceptance.
 
-> Use chatgpt-xodex on tyk-swe/pcr. Reproduce this bug, fix it, add a regression
+After deployment, select the app and describe the work:
+
+> Use chatgpt-xodex on your-owner/your-repo. Reproduce this bug, fix it, add a regression
 > test, validate the change, and open a PR. Handle setup and execution yourself.
 >
 > [Issue and acceptance criteria.]

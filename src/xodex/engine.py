@@ -14,7 +14,8 @@ from .git import GitControl
 from .github import GitHub, load_token
 from .jobs import Jobs
 from .patch import Change, commit, prepare
-from .store import Store, canonical
+from .jsonutil import canonical
+from .store import Store
 from .tasks import Tasks
 from .tools import TOOLS
 

@@ -40,17 +40,17 @@ def test_release_excludes_generated_files_and_credentials(tmp_path):
     shutil.copytree(ROOT, source, ignore=shutil.ignore_patterns(".git", "__pycache__", "*.egg-info", "build", "dist", ".venv"))
     excluded = ("docs/results.json", "docs/results.txt", "docs/.env", "deploy/tunnel.env",
                 "tests/state.sqlite3", "src/xodex/private.key", "scripts/scratch.zip",
-                "tests/.tox/fixture.py", "src/xodex/__pycache__/fixture.py")
+                "tests/.tox/fixture.py", "src/xodex/__pycache__/fixture.py", "src/xodex/private.yaml")
     for name in excluded:
         path = source / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("not a release input")
     names = {path.relative_to(source).as_posix() for path in release["source_files"](source)}
     assert names.isdisjoint(excluded)
-    assert {"worker/Containerfile", "deploy/tunnel.env.example", "src/xodex/instructions.md"} <= names
+    assert {"src/xodex/assets/worker/Containerfile", "src/xodex/assets/tunnel.env.example", "src/xodex/instructions.md"} <= names
 
 
-@pytest.mark.parametrize("name", ["README.md", "worker", "docs", "docs/linked.md"])
+@pytest.mark.parametrize("name", ["README.md", "src/xodex/assets/worker", "docs", "docs/linked.md"])
 def test_release_refuses_symlink_inputs(tmp_path, name):
     release = runpy.run_path(str(ROOT / "scripts/release.py"))
     source = tmp_path / "source"

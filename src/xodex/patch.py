@@ -8,7 +8,7 @@ from typing import Any
 
 from .errors import XodexError
 from .files import WorkspaceFS, relative, sha256
-from .store import canonical
+from .jsonutil import canonical
 
 
 @dataclass

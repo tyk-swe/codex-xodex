@@ -10,7 +10,10 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = (".editorconfig", ".gitignore", "CHANGELOG.md", "LICENSE", "MANIFEST.in", "README.md", "pyproject.toml", "worker/Containerfile")
+FILES = (".editorconfig", ".gitignore", "CHANGELOG.md", "LICENSE", "MANIFEST.in", "README.md", "pyproject.toml",
+         "src/xodex/assets/worker/Containerfile", "src/xodex/assets/tunnel-client.yaml",
+         "src/xodex/assets/tunnel.env.example", "src/xodex/assets/systemd/xodex-engine.service",
+         "src/xodex/assets/systemd/xodex-mcp.service", "src/xodex/assets/systemd/xodex-tunnel.service")
 DIRECTORIES = {
     ".github": {".yml", ".yaml"},
     "deploy": {".toml", ".yaml", ".example", ".service"},

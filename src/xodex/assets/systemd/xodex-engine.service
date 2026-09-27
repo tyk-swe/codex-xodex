@@ -3,7 +3,7 @@ Description=chatgpt-xodex durable execution supervisor
 
 [Service]
 Type=simple
-ExecStart=%h/.xodex/venv/bin/xodex supervise
+ExecStart=@PYTHON@ -m xodex --config @CONFIG@ supervise
 Restart=on-failure
 RestartSec=3
 UMask=0077

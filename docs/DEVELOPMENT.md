@@ -13,6 +13,10 @@ bash -n scripts/install-user.sh scripts/build-worker.sh
 
 Asyncio debug mode is enabled in `pyproject.toml`. Tests exercise task lifecycle, idempotency, confinement, publication invariants,
 real local Git objects/refs, subprocesses, PTYs and private Unix-socket HTTP.
+Setup tests use temporary directories and mocked host commands to exercise fresh
+configuration, cancellation, reruns, secret modes/redaction, worker failures,
+service conflicts/startup and incomplete tunnels. The bootstrap and compatibility
+wrappers are also exercised. Setup never creates tasks or publication records.
 Ordinary execution uses `LocalTestBackend` under `tests/`; GitHub responses are
 fake or mocked. These tests neither open live PRs nor prove Podman isolation.
 
@@ -58,7 +62,11 @@ wheel_dir=$(mktemp -d)
 
 This reuses the development interpreter and its third-party test dependencies; it is not a hermetic install.
 Release tests still inspect source packaging inputs. The CI workflow runs source,
-installed-wheel and extracted-archive checks and retains their results.
+installed-wheel and extracted-archive checks and retains their results. Installed
+wheel checks must also run the copied setup tests and all new command help screens
+from a temporary directory, without a checkout on the import path. The packaged
+assets must be available through `importlib.resources`; there are no runtime
+copies in `deploy/systemd` or `worker`.
 
 ## Tool schemas and versions
 

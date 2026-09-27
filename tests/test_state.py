@@ -39,12 +39,12 @@ def test_config_control_paths_not_mounted(config):
             replace(config, **changes).validate()
 
 
-def test_example_config_parses(monkeypatch, tmp_path):
-    monkeypatch.setenv("HOME", str(tmp_path))
-    config = load_config(Path(__file__).parents[1] / "deploy/config.example.toml")
-    assert config.workspace_dir == tmp_path / ".xodex/tasks"
-    assert config.repositories["tyk-swe/pcr"].branch_prefix == "tyk/xodex-"
-    assert len(config.repositories["tyk-swe/pcr"].checks) == 3
+def test_example_config_parses():
+    path = Path(__file__).parents[1] / "deploy/config.example.toml"
+    config = load_config(path)
+    assert config.workspace_dir == path.parent / "tasks"
+    assert config.repositories["your-owner/your-repo"].branch_prefix == "xodex/"
+    assert config.repositories["your-owner/your-repo"].checks == []
 
 
 def test_initial_schema_is_one_and_reopens_without_losing_identity(tmp_path):

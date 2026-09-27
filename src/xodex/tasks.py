@@ -13,7 +13,8 @@ from .errors import XodexError
 from .git import GitControl
 from .github import GitHub
 from .jobs import Jobs
-from .store import Store, canonical
+from .jsonutil import canonical
+from .store import Store
 
 log = logging.getLogger(__name__)
 ACTIVE_PHASES = {"preparing", "working", "validating", "publishing", "stopping"}

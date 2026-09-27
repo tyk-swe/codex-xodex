@@ -25,9 +25,27 @@ Two Python services separate execution from client connectivity. The third
 service runs the upstream tunnel client. There is no broker, mirrored session,
 workflow DSL, model router or second agent.
 
+## Module boundaries
+
+`cli.py` parses arguments and dispatches commands. `services.py` owns listener
+locking, socket permissions and process lifetimes; `diagnostics.py` owns the
+behavioral sandbox probe. `gateway.py` implements MCP, `supervisor.py` adapts the
+engine to private HTTP, and `client.py` owns that IPC client. `server.py` retains
+compatibility imports. `http.py` handles bounded HTTP bodies and responses;
+`jsonutil.py` is the shared strict parser/canonical encoder and operation hasher.
+Its encoding remains identical for existing persistence and retry identities.
+
+`setup.py` orchestrates the interactive owner workflow. `deployment.py` handles
+private generated files, prerequisites, worker builds and unit rendering;
+`smoke.py` implements the read-only MCP check. Setup never instantiates an engine
+or changes tasks. Service startup invokes the existing recovery logic. Assets in
+`src/xodex/assets` ship in wheels and source releases, so deployment works without
+access to the source checkout.
+
 ## Storage
 
-Default layout; all roots are owner-configured:
+Default layout; omitted runtime paths follow the selected configuration file’s
+directory, and explicit absolute paths take precedence:
 
 ```text
 ~/.xodex/

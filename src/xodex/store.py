@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import fcntl
-import hashlib
 import json
 import os
 import sqlite3
@@ -12,6 +11,7 @@ from pathlib import Path
 from typing import Any, Iterator
 
 from .errors import XodexError
+from .jsonutil import canonical, digest
 
 SCHEMA_VERSION = 1
 
@@ -46,14 +46,6 @@ CREATE TABLE audit(
 );
 CREATE INDEX audit_task ON audit(task_id,id);
 """
-
-
-def canonical(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
-
-
-def digest(value: Any) -> str:
-    return hashlib.sha256(canonical(value).encode()).hexdigest()
 
 
 class Store:

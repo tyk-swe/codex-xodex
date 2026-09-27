@@ -36,6 +36,18 @@ jobs:
           "$RUNNER_TEMP/xodex-wheel/bin/python" -c 'import xodex; print(xodex.__version__, xodex.__file__)'
           "$RUNNER_TEMP/xodex-wheel/bin/python" -m pytest -q -W error -o pythonpath= \
             "$GITHUB_WORKSPACE/tests" --junitxml="$GITHUB_WORKSPACE/test-results-wheel.xml"
+      - name: Exercise wheel setup without the checkout
+        run: |
+          mkdir -p "$RUNNER_TEMP/xodex-standalone/tests"
+          cp tests/conftest.py tests/test_setup.py tests/test_config.py tests/test_package.py "$RUNNER_TEMP/xodex-standalone/tests/"
+          cp pyproject.toml "$RUNNER_TEMP/xodex-standalone/"
+          cd "$RUNNER_TEMP/xodex-standalone"
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -c 'from pathlib import Path; import xodex; assert Path(xodex.__file__).is_relative_to(Path("../xodex-wheel").resolve())'
+          "$RUNNER_TEMP/xodex-wheel/bin/xodex" setup --help
+          "$RUNNER_TEMP/xodex-wheel/bin/xodex" build-worker --help
+          "$RUNNER_TEMP/xodex-wheel/bin/xodex" smoke --help
+          "$RUNNER_TEMP/xodex-wheel/bin/python" -m pytest -q -W error -o pythonpath= tests \
+            --junitxml="$GITHUB_WORKSPACE/test-results-standalone.xml"
       - name: Test the extracted source archive
         run: |
           unzip -q dist/*.zip -d "$RUNNER_TEMP/xodex-archive"

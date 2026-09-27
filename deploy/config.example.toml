@@ -1,20 +1,14 @@
-# One-time VPS-owner configuration. Never send credential values in ChatGPT.
-state_dir = "${HOME}/.xodex/state"
-workspace_dir = "${HOME}/.xodex/tasks"
-engine_socket = "${HOME}/.xodex/run/engine.sock"
-mcp_socket = "${HOME}/.xodex/run/mcp.sock"
-github_token_file = "${HOME}/.xodex/secrets/github-token"
+# Manual reference. Guided first-run setup asks for your repositories.
+# Omitted paths are relative to this file's directory:
+# state/, tasks/, run/engine.sock, run/mcp.sock, secrets/github-token.
+# Explicit absolute paths (including ${HOME} and ~ expansion) take precedence.
 image = "localhost/chatgpt-xodex-worker:0.1.0"
 
-# Replace this table with the exact repository you want ChatGPT to work on.
-# Add another table to allow another repository. Attachment cannot expand this allowlist.
-[repositories."tyk-swe/pcr"]
-branch_prefix = "tyk/xodex-"
-checks = [
-  "cargo fmt --all -- --check",
-  "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings",
-  "cargo test --locked --workspace --all-features",
-]
-# Offline by default. Preprovision dependencies or explicitly permit outbound networking:
-# network = "slirp4netns:allow_host_loopback=false"
+# Replace this placeholder with a repository you own or are authorized to use.
+[repositories."your-owner/your-repo"]
+branch_prefix = "xodex/"
+checks = []
+# Empty owner checks require task-supplied checks under the finalization rules.
 network = "none"
+# To explicitly allow outbound networking:
+# network = "slirp4netns:allow_host_loopback=false"

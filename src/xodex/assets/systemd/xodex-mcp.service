@@ -5,7 +5,7 @@ Wants=xodex-engine.service
 
 [Service]
 Type=simple
-ExecStart=%h/.xodex/venv/bin/xodex serve
+ExecStart=@PYTHON@ -m xodex --config @CONFIG@ serve
 Restart=on-failure
 RestartSec=3
 UMask=0077

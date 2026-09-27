@@ -1,31 +1,14 @@
 from __future__ import annotations
 
-import json
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .errors import XodexError
+from .jsonutil import strict_json
 
 MAX_BODY = 2 * 1024 * 1024
-
-
-def strict_json(data: bytes) -> Any:
-    def reject(value: str) -> None:
-        raise ValueError(f"Invalid JSON constant: {value}")
-    def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError("Duplicate JSON object key")
-            result[key] = value
-        return result
-
-    value = json.loads(data.decode("utf-8"), parse_constant=reject, object_pairs_hook=unique_object)
-    # parse_constant alone does not reject numeric overflow or lone surrogates.
-    json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
-    return value
 
 
 async def body_json(request: Request) -> Any:

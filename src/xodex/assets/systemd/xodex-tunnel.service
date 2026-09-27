@@ -5,9 +5,9 @@ Wants=xodex-mcp.service
 
 [Service]
 Type=simple
-ExecStart=%h/.local/opt/openai-tunnel/tunnel-client run --profile-file %h/.xodex/tunnel-client.yaml
-EnvironmentFile=%h/.xodex/tunnel.env
-Environment=MCP_UNIX_SOCKET_PATH=%h/.xodex/run/mcp.sock
+ExecStart=@TUNNEL_CLIENT@ run --profile-file @TUNNEL_CONFIG@
+EnvironmentFile=@TUNNEL_ENV@
+Environment=@MCP_ENV@
 Restart=on-failure
 RestartSec=5
 UMask=0077

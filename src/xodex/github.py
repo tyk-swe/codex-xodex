@@ -12,7 +12,7 @@ import httpx
 from . import __version__
 from .config import repository_name, validate_ref
 from .errors import XodexError
-from .http import strict_json
+from .jsonutil import strict_json
 
 
 def load_token(path: Path | None) -> str:

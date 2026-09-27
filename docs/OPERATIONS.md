@@ -8,7 +8,7 @@ report the PR and actual validation evidence, or a specific blocker.
 ```bash
 systemctl --user status xodex-engine xodex-mcp xodex-tunnel
 journalctl --user -u xodex-engine.service --since '1 hour ago'
-~/.xodex/venv/bin/python scripts/smoke-mcp.py
+xodex smoke
 ```
 
 Gateway/tunnel restarts do not terminate admitted jobs. Supervisor restart or

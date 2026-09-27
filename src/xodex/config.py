@@ -12,6 +12,8 @@ from .errors import XodexError
 
 
 PATH_FIELDS = ("state_dir", "workspace_dir", "engine_socket", "mcp_socket", "github_token_file")
+DEFAULT_PATHS = dict(zip(PATH_FIELDS, ("state", "tasks", "run/engine.sock", "run/mcp.sock", "secrets/github-token")))
+DEFAULT_IMAGE = f"localhost/chatgpt-xodex-worker:{__version__}"
 
 
 def repository_name(value: str) -> str:
@@ -60,7 +62,7 @@ class Config:
     mcp_socket: Path
     github_token_file: Path | None = None
     repositories: dict[str, Repository] = field(default_factory=dict)
-    image: str = f"localhost/chatgpt-xodex-worker:{__version__}"
+    image: str = DEFAULT_IMAGE
     podman: str = "/usr/bin/podman"
     git: str = "/usr/bin/git"
     max_jobs: int = 4
@@ -163,14 +165,22 @@ def load_config(path: Path) -> Config:
     try:
         with path.open("rb") as file:
             raw = tomllib.load(file)
+    except ValueError as error:
+        raise XodexError("configuration", "Invalid configuration value or TOML syntax") from error
+    return parse_config(raw, path)
+
+
+def parse_config(raw: dict, path: Path) -> Config:
+    """Validate configuration before writing it; omitted paths follow the config file."""
+    raw = dict(raw)
+    base = Path(os.path.abspath(path.expanduser())).parent
+    try:
         unknown = set(raw) - set(Config.__dataclass_fields__)
         if unknown:
             raise XodexError("configuration", "Unknown configuration fields", fields=sorted(unknown))
         for key in PATH_FIELDS:
-            if key == "github_token_file" and key not in raw:
-                continue
             if key not in raw:
-                raise XodexError("configuration", "Missing path", field=key)
+                raw[key] = str(base / DEFAULT_PATHS[key])
             if not isinstance(raw[key], str):
                 raise XodexError("configuration", "Configured paths must be strings", field=key)
             raw[key] = Path(os.path.expandvars(os.path.expanduser(raw[key])))
